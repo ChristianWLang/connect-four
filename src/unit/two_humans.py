@@ -17,17 +17,21 @@ def random_game():
 
     black = True
     while board.winner is None:
-        
-        time.sleep(1)
-        
-        pos = np.random.randint(7)
+
+        if black:
+            whos = 'X'
+
+        else:
+            whos = 'O'
+
+        pos = int(input("{}'s turn: ".format(whos)))
 
         valid_move = False
         try:
             board.move(pos, black = black)
             valid_move = True
         except:
-            pos = np.random.randint(7)
+            pos = int(input("Invalid move, try again: ".format(whos)))
             pass
 
         board.check()
