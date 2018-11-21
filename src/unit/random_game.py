@@ -18,7 +18,7 @@ def random_game():
     black = True
     while board.winner is None:
         
-        time.sleep(1)
+        time.sleep(.5)
         
         pos = np.random.randint(7)
 
@@ -42,6 +42,7 @@ def random_game():
             black = True
 
     print(board.winner)
+    print(board.record)
 
     return
 if __name__ == '__main__':
