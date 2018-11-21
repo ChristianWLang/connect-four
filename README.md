@@ -1,4 +1,4 @@
 # Connect-Four AI
 
 #### Concepts:
-- Bit Representation: 7\times6\times3 = 126
+- Bit Representation: 7x6x3 = 126
