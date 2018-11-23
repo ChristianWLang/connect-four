@@ -28,6 +28,8 @@ class Board(object):
 
     def move(self, pos, black = True):
 
+        state_0 = np.copy(self.state)
+
         pieces = int(np.abs(self.state[:, pos]).sum())
 
         assert pieces < 6
@@ -38,7 +40,9 @@ class Board(object):
         else:
             self.state[pieces, pos] = -1
 
-        self.record.append(self.state)
+        state_1 = np.copy(self.state)
+
+        self.record.append((state_0, pos, black, state_1))
 
         return
 
@@ -46,7 +50,7 @@ class Board(object):
         for x in range(self.state.shape[0]):
             for y in range(4):
                 
-                value = self.state[x, y:y +4].sum()
+                value = self.state[x, y:y + 4].sum()
 
                 if value == 4:
                     self.winner = True
@@ -101,5 +105,8 @@ class Board(object):
                 if value == -4:
                     self.winner = False
                     break
+
+        if np.abs(self.state).sum() == 42:
+            self.winner = 0
 
         return

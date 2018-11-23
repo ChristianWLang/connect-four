@@ -7,8 +7,6 @@ from ..environment.board import Board
 
 import numpy as np
 
-import time
-
 
 def random_game():
 
@@ -18,23 +16,14 @@ def random_game():
     black = True
     while board.winner is None:
         
-        screen = board.show_board()
-        print(screen)
-
-        if black:
-            whos = 'X'
-
-        else:
-            whos = 'O'
-
-        pos = int(input("{}'s turn: ".format(whos)))
+        pos = np.random.randint(7)
 
         valid_move = False
         try:
             board.move(pos, black = black)
             valid_move = True
         except:
-            pos = int(input("Invalid move, try again: ".format(whos)))
+            pos = np.random.randint(7)
             pass
 
         board.check()
@@ -45,10 +34,6 @@ def random_game():
         else:
             black = True
 
-    screen = board_show_board()
-    print(screen)
-    print(board.winner)
-
-    return
+    return board.record, board.winner
 if __name__ == '__main__':
-    random_game()
+    record, winner = random_game()

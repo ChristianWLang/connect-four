@@ -17,6 +17,9 @@ def random_game():
 
     black = True
     while board.winner is None:
+
+        screen = board.show_board()
+        print(screen)
         
         time.sleep(1)
         
@@ -32,15 +35,14 @@ def random_game():
 
         board.check()
 
-        screen = board.show_board()
-        print(screen)
-
         if black:
             black = False
 
         else:
             black = True
 
+    screen = board.show_board()
+    print(screen)
     print(board.winner)
 
     return
