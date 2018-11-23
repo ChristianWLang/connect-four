@@ -45,7 +45,7 @@ def random_game():
         else:
             black = True
 
-    screen = board_show_board()
+    screen = board.show_board()
     print(screen)
     print(board.winner)
 

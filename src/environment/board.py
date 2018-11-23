@@ -47,31 +47,29 @@ class Board(object):
         return
 
     def check(self):
-        for x in range(self.state.shape[0]):
-            for y in range(4):
-                
-                value = self.state[x, y:y + 4].sum()
+        for i in range(4):
+            
+            value = self.state[:, i:i + 4].sum(axis = 1)
 
-                if value == 4:
-                    self.winner = True
-                    break
+            if len(value[value == 4]) > 0:
+                self.winner = True
+                break
 
-                if value == -4:
-                    self.winner = False
-                    break
+            if len(value[value == -4]) > 0:
+                self.winner = False
+                break
 
-        for y in range(self.state.shape[1]):
-            for x in range(3):
+        for i in range(3):
 
-                value = self.state[x:x + 4, y].sum()
+            value = self.state[i:i + 4, :].sum(axis = 0)
 
-                if value == 4:
-                    self.winner = True
-                    break
+            if len(value[value == 4]) > 0:
+                self.winner = True
+                break
 
-                if value == -4:
-                    self.winner = False
-                    break
+            if len(value[value == -4]) > 0:
+                self.winner = False
+                break
 
         for y in range(self.state.shape[1] - 3):
             for x in range(self.state.shape[0] - 3):
