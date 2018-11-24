@@ -3,18 +3,22 @@ Connect-Four environment.
 """
 # Author: Christian Lang <me@christialang.io>
 
+from .base import Base
 import numpy as np
 
 
-class Board(object):
+class Four(Base):
     def __init__(self):
-        self.state = None
         self.record = []
         self.winner = None
         self.key = {'Black': True, 'Red': False}
         self.pieces = {'Black': 'x', 'Red': 'o'}
         self.numeric = {'Black': 1, 'Red': -1}
+        super().__init__()
         pass
+
+    def get_tree(self):
+        tree = {}
 
     def show_board(self):
         state_str = np.flip(np.where(self.state == 0, '-', np.where(self.state == 1, 'x', 'o')), axis = 0)

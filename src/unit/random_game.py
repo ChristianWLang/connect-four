@@ -3,7 +3,7 @@ Random game example.
 """
 # Author: Christian Lang <me@christianlang.io>
 
-from ..environment.board import Board
+from ..environment.four import Four
 
 import numpy as np
 
@@ -12,7 +12,7 @@ import time
 
 def random_game():
 
-    board = Board()
+    board = Four()
     board.new_game()
 
     black = True
