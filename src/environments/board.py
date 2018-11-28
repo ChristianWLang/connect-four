@@ -7,18 +7,16 @@ from .base import Base
 import numpy as np
 
 
-class Four(Base):
+class Board(Base):
     def __init__(self):
         self.record = []
         self.winner = None
+        self.turn = True
         self.key = {'Black': True, 'Red': False}
         self.pieces = {'Black': 'x', 'Red': 'o'}
         self.numeric = {'Black': 1, 'Red': -1}
         super().__init__()
         pass
-
-    def get_tree(self):
-        tree = {}
 
     def show_board(self):
         state_str = np.flip(np.where(self.state == 0, '-', np.where(self.state == 1, 'x', 'o')), axis = 0)
@@ -28,27 +26,35 @@ class Four(Base):
         self.state = np.zeros(shape = (6, 7))
         self.record = []
         self.winner = None
+        self.turn = True
         return
 
-    def move(self, pos, black = True):
-
-        state_0 = np.copy(self.state)
+    def move(self, pos):
 
         pieces = int(np.abs(self.state[:, pos]).sum())
 
         assert pieces < 6
 
-        if black:
+        if self.turn:
             self.state[pieces, pos] = 1
 
         else:
             self.state[pieces, pos] = -1
 
-        state_1 = np.copy(self.state)
+        if self.turn:
+            self.turn = False
 
-        self.record.append((state_0, pos, black, state_1))
+        else:
+            self.turn = True
 
         return
+
+    def legal_moves(self):
+
+        pieces = np.abs(self.state).sum(axis = 0)
+        legal = np.where(pieces < 6, 1, 0)
+
+        return legal
 
     def check(self):
         for i in range(4):

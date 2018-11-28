@@ -4,12 +4,15 @@ MLP network for Talos.
 # Author: Christian Lang <me@christianlang.io>
 
 import tensorflow as tf
-import keras
+import tensorflow.keras.backend as K
+from tensorflow import keras
+
+import numpy as np
 
 
-def talos_loss(y_true, y_pred):
-    return
-def talos_mlp(input_dim, output_dim):
+def _loss(y_true, y_pred):
+    return K.sum(K.square(y_pred - y_true) * K.abs(y_true), axis = -1)
+def MLP(input_dim, output_dim):
 
     network = keras.models.Sequential()
 
@@ -22,15 +25,15 @@ def talos_mlp(input_dim, output_dim):
 
     network.add(keras.layers.Dense(
         output_dim,
-        activation = 'sigmoid',
+        activation = 'tanh',
         kernel_initializer = 'glorot_uniform',
         bias_initializer = 'glorot_uniform'))
 
     network.compile(
             optimizer = 'adam',
-            loss = 'mean_squared_error',
-            metrics = ['mse'])
+            loss = _loss,
+            metrics = [_loss])
 
     return network
 if __name__ == '__main__':
-    network = talos_mlp(42, 8)
+    network = MLP(42, 8)
