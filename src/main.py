@@ -6,7 +6,6 @@ Main algorithm.
 from .environments.board import Board
 from .models.mlp import MLP
 
-import datetime as dt
 import numpy as np
 
 

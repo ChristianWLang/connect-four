@@ -17,7 +17,14 @@ def MLP(input_dim, output_dim):
     network = keras.models.Sequential()
 
     network.add(keras.layers.Dense(
-        32,
+        128,
+        activation = 'relu',
+        input_dim = input_dim,
+        kernel_initializer = 'glorot_uniform',
+        bias_initializer = 'glorot_uniform'))
+    
+    network.add(keras.layers.Dense(
+        128,
         activation = 'relu',
         input_dim = input_dim,
         kernel_initializer = 'glorot_uniform',
@@ -36,4 +43,4 @@ def MLP(input_dim, output_dim):
 
     return network
 if __name__ == '__main__':
-    network = MLP(42, 8)
+    network = MLP(84, 7)
