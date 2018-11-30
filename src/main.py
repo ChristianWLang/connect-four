@@ -11,11 +11,11 @@ import numpy as np
 
 def main(start_greedy = 1,
         end_greedy = .1,
-        initial_greedy = 5000,
-        anneal_greedy = 25000):
+        initial_greedy = 1000,
+        anneal_greedy = 5000):
 
     board = Board()
-    network = MLP(input_dim = 84, output_dim = 7)
+    network = MLP(input_dim = 84, output_dim = 1)
     history = []
     greedy = start_greedy
     turns_per_game = []
@@ -29,22 +29,39 @@ def main(start_greedy = 1,
         game = []
         while board.winner is None:
 
-            state = board.get_state()
+            state_0 = board.get_state()
 
             if not board.turn:
-                state *= -1
+                state_0 *= -1
 
-            representation = np.zeros(shape = (42, 2))
-            p1 = np.where(state.flatten() == 1, 1, 0)
-            p2 = np.where(state.flatten() == -1, 1, 0)
+            representation_0 = np.zeros(shape = (42, 2))
+            p1 = np.where(state_0.flatten() == 1, 1, 0)
+            p2 = np.where(state_0.flatten() == -1, 1, 0)
 
-            representation[:, 0] += p1
-            representation[:, 1] += p2
+            representation_0[:, 0] += p1
+            representation_0[:, 1] += p2
 
             if np.random.uniform() < greedy:
-                actions = np.random.uniform(-1, 1, size = (1, 7))
+                actions = np.random.uniform(0, 1, size = (1, 7))
             else:
-                actions = network.predict(representation.reshape(1, -1))
+                actions = np.zeros(shape = (1, 7))
+                legal = board.legal_moves()
+                for i in range(len(legal)):
+                    if legal[i] == 1:
+                        
+                        glimpse = board.view_move(i, board.turn)
+
+                        if not board.turn:
+                            glimpse *= -1
+                        
+                        glimpse_representation = np.zeros(shape = (42, 2))
+                        p1 = np.where(glimpse.flatten() == 1, 1, 0)
+                        p2 = np.where(glimpse.flatten() == -1, 1, 0)
+                        
+                        glimpse_representation[:, 0] += p1
+                        glimpse_representation[:, 1] += p2
+
+                        actions[0][i] = network.predict(glimpse_representation.reshape(1, -1))
 
             actions = np.where(board.legal_moves() == 1, actions, -1)
             moves = actions.argsort().flatten()[::-1]
@@ -55,8 +72,20 @@ def main(start_greedy = 1,
                     break
                 except:
                     continue
+            
+            state_1 = board.get_state()
 
-            game.append((representation, actions, board.turn))
+            if not board.turn:
+                state_1 *= -1
+
+            representation_1 = np.zeros(shape = (42, 2))
+            p1 = np.where(state_1.flatten() == 1, 1, 0)
+            p2 = np.where(state_1.flatten() == -1, 1, 0)
+
+            representation_1[:, 0] += p1
+            representation_1[:, 1] += p2
+
+            game.append((representation_0, board.turn, representation_1))
             turns += 1
             board.check()
 
@@ -64,17 +93,16 @@ def main(start_greedy = 1,
 
         X, y = [], []
         for g in game:
-
-            reward = np.zeros(shape = (7,))
             
-            if g[2] == board.winner:
-                reward[g[1].argmax()] = 1
+            if g[1] == board.winner:
+                reward = 1
 
             else:
-                reward[g[1].argmax()] = -1
+                reward = 0
             
-            X.append(g[0].reshape(1, -1))
-            y.append(reward)
+            for i in [0, 2]:
+                X.append(g[i].reshape(1, -1))
+                y.append(reward)
 
         X, y = np.vstack(X), np.vstack(y)
 
@@ -92,9 +120,9 @@ def main(start_greedy = 1,
                 greedy,
                 sum(turns_per_game[-100:]) / 100))
 
-        if (iteration > 50000) & (iteration % 10000 == 0):
+        if (iteration >= 50000) & (iteration % 10000 == 0):
             print('Saving Model')
-            network.save('model/network.h5')
+            network.save('model/network0_{}.h5'.format(iteration))
 
     return
 if __name__ == '__main__':

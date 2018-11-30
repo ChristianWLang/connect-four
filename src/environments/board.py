@@ -49,6 +49,22 @@ class Board(Base):
 
         return
 
+    def view_move(self, pos, turn):
+
+        _state = np.copy(self.state)
+        
+        pieces = int(np.abs(_state[:, pos]).sum())
+
+        assert pieces < 6
+
+        if turn:
+            _state[pieces, pos] = 1
+
+        else:
+            _state[pieces, pos] = -1
+
+        return _state
+
     def legal_moves(self):
 
         pieces = np.abs(self.state).sum(axis = 0)
