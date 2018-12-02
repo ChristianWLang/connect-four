@@ -9,7 +9,7 @@ from ..environments.board import Board
 import numpy as np
 
 
-def against_ai(iteration = 70000):
+def against_ai(iteration = 80000):
 
     first = input('Go first? (y/n) : ')
     if first.startswith('y'):
@@ -33,7 +33,7 @@ def against_ai(iteration = 70000):
             except:
                 moves = int(input('Move (0 - 6) [int] : '))
 
-            if (moves < 1) | (moves > 7):
+            if (moves < 0) | (moves > 6):
                 moves = int(input('Move BETWEEN (0 - 6) [int] : '))
 
             if board.legal_moves()[moves] == 0:

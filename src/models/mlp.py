@@ -35,7 +35,7 @@ def MLP(input_dim, output_dim):
         bias_initializer = 'glorot_uniform'))
 
     network.compile(
-            optimizer = tf.train.AdamOptimizer(.01),
+            optimizer = keras.optimizers.Adam(lr = .001),
             loss = 'binary_crossentropy',
             metrics = ['accuracy'])
 
