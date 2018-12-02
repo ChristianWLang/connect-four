@@ -5,4 +5,5 @@ This project was inspired by Deepmind's Alpha Zero, a deep reinforcement learnin
 
 #### Concepts:
 - Games can be represented in bits (usually)
-  - For Connect Four, the bit representation could look something like a: 7x6x2 = 84 binary vector of ones and zeros. Where 7x6 represents the board's dimensions, and x3 represents the potential for a given space to have one of your pieces in it ([1, 0]), no piece in it ([0, 0]), or one of the opponent's pieces in it ([0, 1]).
+  - For Connect Four, the bit representation could look something like a: 7x6x2 = 84 binary vector of ones and zeros. Where 7x6 represents the board's dimensions, and x3 represents the potential for a given space to have one of your pieces in it ([1, 0]), no piece in it ([0, 0]), or one of the opponent's pieces in it ([0, 1])
+- The Most effective way (at current time) to traverse a zero-sum, fully deterministic, perfect information game is by tree search
