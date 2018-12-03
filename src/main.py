@@ -29,13 +29,24 @@ def main(start_greedy = 1,
         board.new_game()
         winner = None
 
+        turn = 1
+        tau = 1
         while winner is None:
 
-            actions, value = agent.act(board)
+            print(board.show_board())
+
+            if turn > 2:
+                tau = .1
+            actions = agent.act(board, simulations = 1600, tau = tau)
             board.move(actions)
             winner = board.check()
 
-        agent.train()
+            turn += 1
+
+        print(board.show_board())
+
+        agent.train(winner = winner)
+        
         iteration += 1
 
         if (iteration % 50 == 0):

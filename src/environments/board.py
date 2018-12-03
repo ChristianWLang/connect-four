@@ -109,15 +109,17 @@ class Board(object):
         '''
 
         if state is None:
-            state = self.state
+            state = np.copy(self.state)
 
-        if player is None:
+        if turn is None:
             turn = self.turn
+
+        _state = np.copy(state)
 
         actions = actions.flatten()
         
-        pieces = np.abs(state).sum(axis = 0)
-        legal = self.legal_moves(state = state)
+        pieces = np.abs(_state).sum(axis = 0)
+        legal = self.legal_moves(state = _state)
         actions *= legal
 
         actions = np.exp(actions) / np.exp(actions).sum()
@@ -125,10 +127,10 @@ class Board(object):
         pos = np.unravel_index(np.argmax(actions, axis = None), actions.shape)[0]
 
         if turn:
-            state[int(pieces[pos]), int(pos)] = 1
+            _state[int(pieces[pos]), int(pos)] = 1
 
         else:
-            state[int(pieces[pos]), int(pos)] = -1
+            _state[int(pieces[pos]), int(pos)] = -1
 
         if turn:
             turn = False
@@ -136,7 +138,7 @@ class Board(object):
         else:
             turn = True
 
-        return state, turn
+        return _state, turn
 
     def legal_moves(self, state = None):
         '''
@@ -222,6 +224,6 @@ class Board(object):
                     break
 
         if np.abs(state).sum() == 42:
-            winner = 0
+            winner = .5
 
         return winner

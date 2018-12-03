@@ -17,33 +17,71 @@ class Agent(object):
         self.anneal_end = anneal_end
         self.network = network
         self.history = []
+        self.search = None
         pass
 
-    def act(self, board, simulations = 800):
+    def act(self, board, simulations = 800, tau = 1):
         '''
         Returns action distribution, as given by agent.
         '''
+    
+        if self.search is None:
+            self.search = MCTS(board = board)
 
-        search = MCTS(board = board, 
-                network = self.network)
+        else:
+            self.search.set_root(board = board)
 
         for i in range(simulations):
+
             ## Simulate a game with search.simulate
-            ## If needed, evaluate terminal state
+            node, winner, backprop = self.search.simulate(board = board)
+            
+            ## Evaluate leaf node with search.evaluate
+            winner = self.search.evaluate(current = node,
+                    winner = winner,
+                    network = self.network,
+                    board = board)
+            
             ## Update the search tree with search.update
+            self.search.backpropagation(current = node,
+                    winner = winner,
+                    backprop = backprop)
 
-        actions = np.random.uniform(0, 1, size = (1, 7))
-        value = np.random.uniform()
+            pass
+        
+        action = self.search.play(tau = tau)
 
-        self.history.append((board.get_representation(), actions, board.turn))
+        self.history.append((board.get_representation(), action, board.turn))
 
-        return actions, value
+        for edge in self.search.root.edges:
+            print(edge.stats)
+
+        return action
 
     def clear_history(self):
         self.history = []
         return
 
-    def train(self, remove = True):
+    def train(self, winner, remove = True):
+        X, y = [], []
+
+        for record in self.history:
+            X.append(record[0])
+            if (winner == True) | (winner == False):
+                if record[2] == winner:
+                    y.append(np.append(record[1], 1))
+
+                else:
+                    y.append(np.append(record[1], 0))
+
+            else:
+                y.append(np.append(record[1], winner))
+
+        X = np.vstack(X)
+        y = np.vstack(y)
+
+        self.network.train_on_batch(X, y)
+
         if remove:
             self.history = []
         return

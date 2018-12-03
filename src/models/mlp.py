@@ -9,7 +9,10 @@ from tensorflow import keras
 
 import numpy as np
 
-
+def joint_loss(y_true, y_pred):
+    loss = K.sum(K.square(y_true[:, -1] - y_pred[:, -1]) - \
+            K.sum(y_true[:, :-1] * K.log(y_pred[:, :-1]), axis = 1))
+    return loss
 def MLP(input_dim, output_dim):
 
     network = keras.models.Sequential()
@@ -36,8 +39,7 @@ def MLP(input_dim, output_dim):
 
     network.compile(
             optimizer = keras.optimizers.Adam(lr = .001),
-            loss = 'binary_crossentropy',
-            metrics = ['accuracy'])
+            loss = joint_loss)
 
     return network
 if __name__ == '__main__':
