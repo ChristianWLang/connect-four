@@ -17,3 +17,6 @@ $ python3 -m src.main
 
 #### Requirements:
 As of writing this, python >= 3.7 is incompatible with this module.
+
+#### TODO:
+Figure out why search results aren't being reused.
