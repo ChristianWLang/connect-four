@@ -16,6 +16,7 @@ class Agent(object):
         self.anneal_start = anneal_start
         self.anneal_end = anneal_end
         self.network = network
+        self.game = []
         self.history = []
         self.search = None
         pass
@@ -51,7 +52,7 @@ class Agent(object):
         
         action = self.search.play(tau = tau)
 
-        self.history.append((board.get_representation(), action, board.turn))
+        self.game.append((board.get_representation(), action, board.turn))
 
         for edge in self.search.root.edges:
             print(edge.stats)
@@ -62,29 +63,64 @@ class Agent(object):
         self.history = []
         return
 
-    def train(self, winner, remove = True):
-        X, y = [], []
+    def clear_game(self):
+        self.game = []
+        return
 
-        for record in self.history:
-            X.append(record[0])
+    def store(self, winner, remove = True):
+        
+        for record in self.game:
             if (winner == True) | (winner == False):
                 if record[2] == winner:
-                    y.append(np.append(record[1], 1))
+                    self.history.append((record[0], record[1], 1))
 
                 else:
-                    y.append(np.append(record[1], 0))
+                    self.history.append((record[0], record[1], -1))
 
             else:
-                y.append(np.append(record[1], winner))
-
-        X = np.vstack(X)
-        y = np.vstack(y)
-
-        self.network.train_on_batch(X, y)
+                self.history.append((record[0], record[1], winner))
 
         if remove:
-            self.history = []
+            self.clear_game()
+
         return
+
+    def train(self, batch = 2048, remove = False):
+
+        states = np.random.choice(len(self.history), size = batch)
+
+        X, y1, y2 = [], [], []
+        for state in states:
+            X.append(self.history[state][0])
+            y1.append(self.history[state][1])
+            y2.append(self.history[state][2])
+
+        X = np.vstack(X)
+        y1 = np.vstack(y1)
+        y2 = np.vstack(y2)
+
+        self.network.train_on_batch(X, [y1, y2])
+
+        if remove:
+            self.clear_history()
+
+        return
+
+    def evaluate(self, batch_size = 32):
+
+        X, y1, y2 = [], [], []
+        for hist in self.history:
+            X.append(hist[0])
+            y1.append(hist[1])
+            y2.append(hist[2])
+
+        X = np.vstack(X)
+        y1 = np.vstack(y1)
+        y2 = np.vstack(y2)
+
+        loss = self.network.evaluate(X, [y1, y2], batch_size = batch_size)
+
+        return loss
 
     def get_network(self):
         return self.network

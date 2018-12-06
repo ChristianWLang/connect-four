@@ -27,13 +27,12 @@ class Node(object):
         priors = network.predict(
                 board.get_representation(state = self.state,
                 turn = self.turn)
-                ).flatten()
+                )
 
-        priors, value = priors[:-1], priors[-1]
+        priors, value = priors[0][0], float(priors[1][0])
         
         legal_moves = board.legal_moves(self.state)
         priors *= legal_moves
-        priors = np.exp(priors) / np.exp(priors).sum()
 
         for i in range(len(legal_moves)):
             if legal_moves[i] == 1:
@@ -166,13 +165,13 @@ class MCTS(object):
                 if edge_player == winner:
                     value_update = 1
                 else:
-                    value_update = 0
+                    value_update = -1
 
             else:
                 if edge_player == current.turn:
                     value_update = winner
                 else:
-                    value_update = 1 - winner
+                    value_update = winner * -1
 
             edge.stats['N'] += 1
             edge.stats['W'] += value_update

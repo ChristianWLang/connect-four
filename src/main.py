@@ -15,7 +15,7 @@ def main(start_greedy = 1,
         anneal_start = 1000,
         anneal_end = 5000):
 
-    network = MLP(input_dim = 84, output_dim = 8)
+    network = MLP(input_dim = 84)
     board = Board()
     agent = Agent(start_greedy = start_greedy,
             end_greedy = end_greedy,
@@ -37,22 +37,27 @@ def main(start_greedy = 1,
 
             if turn > 2:
                 tau = .1
-            actions = agent.act(board, simulations = 1600, tau = tau)
+            actions = agent.act(board, simulations = 800, tau = tau)
             board.move(actions)
             winner = board.check()
 
             turn += 1
 
         print(board.show_board())
-
-        agent.train(winner = winner)
         
         iteration += 1
+        
+        agent.store(winner = winner)
 
-        if (iteration % 50 == 0):
+        agent.train()
+        loss = agent.evaluate()
+        
+        print('{} | {}'.format(iteration, loss))
+
+        if (iteration % 10 == 0):
             print(iteration)
 
-        if (iteration >= 1000) & (iteration % 1000 == 0):
+        if (iteration >= 10) & (iteration % 10 == 0):
             print('Saving Model')
             network = agent.get_network()
             network.save('model/network0_{}.h5'.format(iteration))

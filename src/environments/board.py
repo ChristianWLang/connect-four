@@ -81,8 +81,6 @@ class Board(object):
         legal = self.legal_moves()
         actions *= legal
 
-        actions = np.exp(actions) / np.exp(actions).sum()
-
         pos = np.unravel_index(np.argmax(actions, axis = None), actions.shape)[0]
 
         if self.turn:
@@ -121,8 +119,6 @@ class Board(object):
         pieces = np.abs(_state).sum(axis = 0)
         legal = self.legal_moves(state = _state)
         actions *= legal
-
-        actions = np.exp(actions) / np.exp(actions).sum()
 
         pos = np.unravel_index(np.argmax(actions, axis = None), actions.shape)[0]
 
@@ -224,6 +220,6 @@ class Board(object):
                     break
 
         if np.abs(state).sum() == 42:
-            winner = .5
+            winner = 0
 
         return winner

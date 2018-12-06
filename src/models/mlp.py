@@ -1,5 +1,5 @@
 """
-MLP network for Talos.
+MLP network.
 """
 # Author: Christian Lang <me@christianlang.io>
 
@@ -13,34 +13,42 @@ def joint_loss(y_true, y_pred):
     loss = K.sum(K.square(y_true[:, -1] - y_pred[:, -1]) - \
             K.sum(y_true[:, :-1] * K.log(y_pred[:, :-1]), axis = 1))
     return loss
-def MLP(input_dim, output_dim):
+def MLP(input_dim):
 
-    network = keras.models.Sequential()
+    inputs = keras.layers.Input(shape = (input_dim,))
 
-    network.add(keras.layers.Dense(
-        128,
-        activation = 'relu',
-        input_dim = input_dim,
-        kernel_initializer = 'glorot_uniform',
-        bias_initializer = 'glorot_uniform'))
+    x = keras.layers.Dense(128,
+            activation = 'relu',
+            kernel_initializer = 'glorot_uniform', 
+            bias_initializer = 'glorot_uniform',
+            kernel_regularizer = keras.regularizers.l2(0.1))(inputs)
     
-    network.add(keras.layers.Dense(
-        128,
-        activation = 'relu',
-        input_dim = input_dim,
-        kernel_initializer = 'glorot_uniform',
-        bias_initializer = 'glorot_uniform'))
+    x = keras.layers.Dense(128,
+            activation = 'relu',
+            kernel_initializer = 'glorot_uniform', 
+            bias_initializer = 'glorot_uniform',
+            kernel_regularizer = keras.regularizers.l2(0.1))(x)
 
-    network.add(keras.layers.Dense(
-        output_dim,
-        activation = 'sigmoid',
-        kernel_initializer = 'glorot_uniform',
-        bias_initializer = 'glorot_uniform'))
+    policy = keras.layers.Dense(7,
+            activation = 'softmax',
+            kernel_initializer = 'glorot_uniform',
+            bias_initializer = 'glorot_uniform',
+            kernel_regularizer = keras.regularizers.l2(0.1),
+            name = 'policy')(x)
+    
+    value = keras.layers.Dense(1,
+            activation = 'tanh',
+            kernel_initializer = 'glorot_uniform',
+            bias_initializer = 'glorot_uniform',
+            kernel_regularizer = keras.regularizers.l2(0.1),
+            name = 'value')(x)
 
+    network = keras.models.Model(inputs = inputs, outputs = [policy, value])
     network.compile(
+            loss = {'policy': 'categorical_crossentropy', 'value': 'mean_squared_error'},
             optimizer = keras.optimizers.Adam(lr = .001),
-            loss = joint_loss)
+            loss_weights = {'policy': .5, 'value': .5})
 
     return network
 if __name__ == '__main__':
-    network = MLP(84, 1)
+    network = MLP(84)
