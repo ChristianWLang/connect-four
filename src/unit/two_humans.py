@@ -3,25 +3,26 @@ Random game example.
 """
 # Author: Christian Lang <me@christianlang.io>
 
-from ..environment.four import Four
+from ..environments.board import Board
 
 import numpy as np
 
 import time
 
 
-def random_game():
+def two_humans():
 
-    board = Four()
+    board = Board()
     board.new_game()
+    
+    winner = None
 
-    black = True
-    while board.winner is None:
+    while winner is None:
         
         screen = board.show_board()
         print(screen)
 
-        if black:
+        if board.turn:
             whos = 'X'
 
         else:
@@ -29,26 +30,28 @@ def random_game():
 
         pos = int(input("{}'s turn: ".format(whos)))
 
-        valid_move = False
+        move = np.zeros(7)
+        print(move)
+        move[pos] = 1
+
+        print(move)
+
         try:
-            board.move(pos, black = black)
-            valid_move = True
+            board.move(move)
         except:
             pos = int(input("Invalid move, try again: ".format(whos)))
+
+            move = np.zeros(7)
+            move[pos] = 1
+
             pass
 
-        board.check()
-
-        if black:
-            black = False
-
-        else:
-            black = True
+        winner = board.check()
 
     screen = board.show_board()
     print(screen)
-    print(board.winner)
+    print(winner)
 
     return
 if __name__ == '__main__':
-    random_game()
+    two_humans()

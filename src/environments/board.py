@@ -186,13 +186,11 @@ class Board(object):
                 winner = False
                 break
 
-        for y in range(state.shape[1] - 3):
-            for x in range(state.shape[0] - 3):
+        flip = np.flip(state, axis = 0)
+        for y in range(flip.shape[1] - 3):
+            for x in range(flip.shape[0] - 3):
 
-                value = np.array([state[x, y],
-                    state[x+1, y+1],
-                    state[x+2, y+2],
-                    state[x+3, y+3]]).sum()
+                value = np.trace(flip[y:y+4], offset = x)
 
                 if value == 4:
                     winner = True
@@ -202,14 +200,11 @@ class Board(object):
                     winner = False
                     break
 
-        flipped = np.flip(state, axis = -1)
-        for y in range(state.shape[1] - 3):
-            for x in range(state.shape[0] - 3):
+        flipped = np.flip(flip, axis = -1)
+        for y in range(flipped.shape[1] - 3):
+            for x in range(flipped.shape[0] - 3):
 
-                value = np.array([flipped[x, y],
-                    flipped[x+1, y+1],
-                    flipped[x+2, y+2],
-                    flipped[x+3, y+3]]).sum()
+                value = np.trace(flipped[y:y+4], offset = x)
 
                 if value == 4:
                     winner = True

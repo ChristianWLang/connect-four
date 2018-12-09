@@ -4,6 +4,8 @@ Generalized RL Agent.
 # Author: Christian Lang <me@christianlang.io>
 
 import numpy as np
+import multiprocessing
+
 from ..search.mcts import MCTS
 
 
