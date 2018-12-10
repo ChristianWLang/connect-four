@@ -4,7 +4,6 @@ Generalized RL Agent.
 # Author: Christian Lang <me@christianlang.io>
 
 import numpy as np
-import multiprocessing
 
 from ..search.mcts import MCTS
 
@@ -56,9 +55,6 @@ class Agent(object):
 
         self.game.append((board.get_representation(), action, board.turn))
 
-        for edge in self.search.root.edges:
-            print(edge.stats)
-
         return action
 
     def clear_history(self):
@@ -87,7 +83,7 @@ class Agent(object):
 
         return
 
-    def train(self, batch = 2048, remove = False):
+    def train(self, batch = 64, remove = False):
 
         states = np.random.choice(len(self.history), size = batch)
 
@@ -121,6 +117,7 @@ class Agent(object):
         y2 = np.vstack(y2)
 
         loss = self.network.evaluate(X, [y1, y2], batch_size = batch_size)
+        loss = dict(zip(self.network.metrics_names, loss))
 
         return loss
 

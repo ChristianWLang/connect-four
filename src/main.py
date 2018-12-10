@@ -35,9 +35,9 @@ def main(start_greedy = 1,
 
             print(board.show_board())
 
-            if turn > 2:
+            if turn > 16:
                 tau = .1
-            actions = agent.act(board, simulations = 1600, tau = tau)
+            actions = agent.act(board, simulations = 800, tau = tau)
             board.move(actions)
             winner = board.check()
 

@@ -9,10 +9,6 @@ from tensorflow import keras
 
 import numpy as np
 
-def joint_loss(y_true, y_pred):
-    loss = K.sum(K.square(y_true[:, -1] - y_pred[:, -1]) - \
-            K.sum(y_true[:, :-1] * K.log(y_pred[:, :-1]), axis = 1))
-    return loss
 def MLP(input_dim):
 
     inputs = keras.layers.Input(shape = (input_dim,))
@@ -46,7 +42,7 @@ def MLP(input_dim):
     network = keras.models.Model(inputs = inputs, outputs = [policy, value])
     network.compile(
             loss = {'policy': 'categorical_crossentropy', 'value': 'mean_squared_error'},
-            optimizer = keras.optimizers.Adam(lr = .001),
+            optimizer = keras.optimizers.Adam(lr = .01),
             loss_weights = {'policy': .5, 'value': .5})
 
     return network
